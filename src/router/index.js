@@ -4,6 +4,7 @@ import Home from '@/components/Home'
 import Login from '@/components/Login'
 import SignUp from '@/components/SignUp'
 import SingleLeague from '@/components/SingleLeague'
+import SingleTeam from '@/components/SingleTeam'
 import LeagueChampions from '@/components/LeagueChampions'
 import FixturesMatches from '@/components/FixturesMatches'
 
@@ -23,10 +24,16 @@ export default new Router({
       component: SignUp
     },
     {
-      path: '/league/:id',
+      path: '/league-:id',
       name: 'SingleLeague',
       props: true,
       component: SingleLeague
+    },
+    {
+      path: '/team-:id',
+      name: 'SingleTeam',
+      props: true,
+      component: SingleTeam
     },
     {
       path: '/champions-league',
@@ -40,7 +47,7 @@ export default new Router({
     },
     {
       path: '/',
-      name: 'HelloWorld',
+      name: 'Home',
       component: Home,
       meta: {
         requiresAuth: false

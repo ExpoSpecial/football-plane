@@ -2,7 +2,15 @@
   <v-layout row wrap>
     <v-flex xs12>
   <div class="table-for-league">
-    <h1>{{ league.teams.leagueCaption }}</h1>
+    <v-btn
+      :to="{ name: 'Home' }"
+      color="blue-grey"
+      class="white--text"
+    >
+      <v-icon dark>arrow_back</v-icon>
+      back home
+    </v-btn>
+    <h1>{{ league.leagueCaption }}</h1>
     <v-tabs fixed icons centered>
       <v-tabs-bar dark color="green darken-3">
         <v-tabs-slider color="yellow"></v-tabs-slider>
@@ -32,10 +40,9 @@
                   <td>GA</td>
                   <td>GD</td>
                   <td>Points</td>
-                  <td></td>
                 </tr>
                 </thead>
-                <tr v-for="item in league.teams.standing">
+                <tr v-for="item in league.standing">
                   <td>{{item.position}} <img :src="item.crestURI" alt=""></td>
                   <td>{{item.teamName}}</td>
                   <td>{{item.playedGames}}</td>
@@ -46,9 +53,6 @@
                   <td>{{item.goalsAgainst}}</td>
                   <td>{{item.goalDifference}}</td>
                   <td>{{item.points}}</td>
-                  <td><v-btn fab dark small color="green darken-3" @click.stop="dialog2 = !dialog2" @click="getPlayers(item._links.team.href + '/players')">
-                    <v-icon>more_horiz</v-icon>
-                  </v-btn></td>
                 </tr>
               </table>
             </v-card-text>
@@ -59,52 +63,52 @@
         >
           <v-card flat>
             <v-card-text>
-              <table class="list-games">
-                <tr avatar v-for="fixter in fixtures.fixtures">
-                  <td>{{ fixter.homeTeamName }}</td>
-                  <td><v-chip outline color="secondary">{{ fixter.result.goalsHomeTeam }} : {{ fixter.result.goalsAwayTeam }}</v-chip></td>
-                  <td>{{ fixter.awayTeamName }}</td>
-                </tr>
-              </table>
+              <div class="fixtures-container">
+                <v-layout row wrap>
+                  <v-flex xs2>
+                    <v-subheader>Tour:</v-subheader>
+                  </v-flex>
+                  <v-flex xs2>
+                    <v-select
+                      v-bind:items="matchdays"
+                      v-model="num"
+                      label="Select"
+                      single-line
+                      @change="getFixtures()"
+                      bottom
+                    ></v-select>
+                  </v-flex>
+                </v-layout>
+                <table class="list-games">
+                  <thead dark color="green darken-3">
+                  <tr>
+                    <td>Data</td>
+                    <td>Tour</td>
+                    <td>Home team</td>
+                    <td>Score</td>
+                    <td>Away team</td>
+                    <td>Status</td>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr avatar v-for="fixter in fixtures">
+                    <td class="data-match">{{ fixter.date }}</td>
+                    <td class="tour-number">{{ fixter.matchday }}</td>
+                    <td class="home-team">{{ fixter.homeTeamName }}</td>
+                    <td class="score-match">{{ fixter.result.goalsHomeTeam }} : {{ fixter.result.goalsAwayTeam }}</td>
+                    <td class="away-team">{{ fixter.awayTeamName }}</td>
+                    <td v-if="fixter.status === 'IN_PLAY'" class="status-play">{{ fixter.status }}</td>
+                    <td v-if="fixter.status === 'FINISHED'" class="status-finish">{{ fixter.status }}</td>
+                    <td v-if="fixter.status === 'TIMED'" class="status-timed">{{ fixter.status }}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
             </v-card-text>
           </v-card>
         </v-tabs-content>
       </v-tabs-items>
     </v-tabs>
-
-    <v-dialog v-model="dialog2" max-width="900px">
-      <v-card>
-        <v-card-title>
-        </v-card-title>
-        <v-card-text class="modal-dialog">
-          <table>
-            <thead>
-            <tr>
-              <td>Player</td>
-              <td></td>
-              <td>Position</td>
-              <td>Number</td>
-              <td>Nationality</td>
-              <td>Birthday</td>
-            </tr>
-            </thead>
-            <tr v-for="item in players.players">
-              <td><v-icon>perm_identity</v-icon></td>
-              <td>{{item.name}}</td>
-              <td>{{item.position}}</td>
-              <td>{{item.jerseyNumber}}</td>
-              <td>{{item.nationality}}</td>
-              <td>
-                {{item.dateOfBirth}}
-              </td>
-            </tr>
-          </table>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn outline color="light-green darken-1" flat @click.stop="dialog2=false">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </div>
     </v-flex>
   </v-layout>
@@ -115,29 +119,29 @@
     props: ['id'],
     data () {
       return {
-        dialog: false,
-        dialog2: false,
+        league: [],
         players: [],
-        fixtures: []
-      }
-    },
-    computed: {
-      league: function () {
-        return this.$store.getters.loadLeague(this.id)
+        matchdays: [],
+        fixtures: [],
+        num: null
       }
     },
     mounted: function () {
-      this.getPlayers()
+      return this.getLeague()
     },
     methods: {
-      getPlayers (teamId) {
-        axios.get(teamId, {
+      getLeague () {
+        axios.get('https://api.football-data.org/v1/competitions/' + this.id + '/leagueTable', {
           headers: {
             'X-Auth-Token': 'b50e3db6d6db42d18ab7a6d230a0b206'
           }
         }).then((response) => {
-          this.players = response.data
-          console.log(this.players)
+          this.league = response.data
+          this.$store.commit('SET_SITE_TITLE', response.data.leagueCaption)
+          for (let i = 1; i <= response.data.matchday; i++) {
+            this.matchdays.push(i)
+          }
+          this.num = response.data.matchday
         })
       },
       getFixtures () {
@@ -146,24 +150,79 @@
             'X-Auth-Token': 'b50e3db6d6db42d18ab7a6d230a0b206'
           }
         }).then((response) => {
-          this.fixtures = response.data
-          console.log(this.fixtures)
+          this.fixtures = []
+          response.data.fixtures.map((e) => {
+            if (e.matchday === this.num) {
+              this.fixtures.push(e)
+            }
+          })
+          console.log(response.data)
         })
-      },
-      getTeamInfo () {
-        axios.get('https://api.football-data.org/v1/competitions/' + this.$route.params.id + '/teams', {
-          headers: {
-            'X-Auth-Token': 'b50e3db6d6db42d18ab7a6d230a0b206'
-          }
-        }).then((response) => {
-          this.team = response.data
-          console.log(this.team)
-        })
+      }
+    },
+    watch: {
+      '$route' () {
+        this.getLeague()
       }
     }
   }
 </script>
 <style lang="scss" scoped>
+  .fixtures-container {
+    font-size: 13px;
+    padding: 15px;
+    table {
+      background: #fff;
+      border-spacing: 0;
+      border: 1px solid #eee;
+      width: 100%;
+      thead {
+        font-size: 18px;
+        background: #fafafa;
+      }
+      td {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eee;
+        border-right: 1px solid #eee;
+        &:last-child {
+          border: 0;
+          border-bottom: 1px solid #fff;
+          text-align: center;
+        }
+      }
+    }
+
+    .status-play {
+      background-color: #ff9800;
+    }
+    .status-finish {
+      background-color: #4caf50;
+    }
+    .status-timed {
+      background-color: #f44336;
+    }
+    .score-match {
+      text-align: center;
+      font-size: 18px !important;
+    }
+    .home-team, .away-team {
+      background-color: #fafafa;
+      font-size: 15px;
+    }
+    .home-team {
+      text-align: right;
+    }
+    .data-match {
+      color: #888;
+      font-style: italic;
+      font-weight: bold;
+    }
+    .tour-number {
+      text-align: center;
+      font-weight: bold;
+      color: #888;
+    }
+  }
   .list-games {
     font-size: 13px;
     tr {
@@ -180,19 +239,13 @@
       }
     }
   }
-  .modal-dialog {
-    background: #fafafa;
-    table {
-      width: 100%;
-    }
-  }
   .table-for-league {
     tr:hover {
       background: #fafafa;
       transition: .3s;
     }
   }
-  .table-for-league,.modal-dialog {
+  .table-for-league, {
     table {
       background-color: #fff;
       font-size: 13px;

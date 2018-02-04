@@ -1,6 +1,13 @@
 <template>
   <v-app id="inspire">
-    <sidebar></sidebar>
+    <v-navigation-drawer
+      fixed
+      clipped
+      app
+      v-model="drawer"
+    >
+      <sidebar></sidebar>
+    </v-navigation-drawer>
     <v-toolbar
       color="light-green darken-1"
       dark
@@ -12,13 +19,9 @@
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
         <span class="hidden-xs-only">FIFA World Cup <v-icon>panorama_fish_eye</v-icon></span>
       </v-toolbar-title>
-      <v-text-field
-        light
-        solo
-        prepend-icon="search"
-        placeholder="Search"
-        style="max-width: 500px; min-width: 128px"
-      ></v-text-field>
+
+      <search></search>
+
       <div class="d-flex align-center" style="margin-left: auto">
         <v-btn :to="{ name: 'LeagueChampions' }">Champions League</v-btn>
         <v-btn :to="{ name: 'FixturesMatches' }">Fixtures matches</v-btn>
@@ -47,9 +50,19 @@
 
 <script>
   import sidebar from './components/sidebar'
+  import search from './components/search'
   export default {
     name: 'app',
-    components: { sidebar }
+    components: {
+      sidebar,
+      search
+    },
+    data () {
+      return {
+        alert: true,
+        drawer: null
+      }
+    }
   }
 </script>
 

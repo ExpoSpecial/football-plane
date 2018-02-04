@@ -1,18 +1,62 @@
 <template>
   <div class="main-content">
-    <h1>Капелло: групповая стадия ЧМ-2018 для сборной России не очень сложная</h1>
-    <img src="src/assets/img/home.jpg" alt="">
-    <p>Бывший главный тренер сборной России Фабио Капелло поделился ожиданиями от выступления команды Станислава Черчесова на ЧМ-2018</p>
-    <p>«Групповая стадия для сборной России не очень сложная. Группу можно выигрывать. А после будет очень сложно. Но иногда играть дома –
-      это совсем другое. Ты можешь сделать что-то действительно большое и важное. Я желаю это России, игрокам, всем россиянам!</p>
-    <p>Я болею за Россию, потому что это было очень хорошее время. Я сделал действительно что-то хорошее. Я знаю очень много игроков национальной команды.
-      Кто из игроков мне нравится больше всех? Нет-нет, мне нравятся все игроки", — заявил итальянский специалист в видеоинтервью пресс-службе сборной России.
-      Напомним, на групповом этапе домашнего чемпионата мира российской сборной предстоит сыграть с командами Саудовской Аравии, Египта и Уругвая.</p>
+    <v-layout row wrap>
+          <v-flex xs12 sm6 md6>
+            <v-radio-group v-model="priory" :on:change="getNews" row>
+              <v-radio label="bbc sport"
+                color="success"
+                value="sources=bbc-sport"
+                ></v-radio>
+              <v-radio label="football italia"
+                color="success"
+                value="sources=football-italia"></v-radio>
+              <v-radio label="British news"
+                color="success"
+                value="country=gb&category=sports"></v-radio>
+            </v-radio-group>
+          </v-flex>
+        </v-layout>
+    <v-layout row wrap>
+      <v-flex xs12 sm6 v-for="(article, index) in news" class="item-news" :key="index">
+        <v-card>
+          <v-card-media :src="article.urlToImage" height="250px">
+          </v-card-media>
+          <v-card-title primary-title>
+            <div>
+              <h3 class="headline mb-0" v-html="article.title"></h3>
+              <div v-html="article.description"></div>
+            </div>
+          </v-card-title>
+          <v-card-actions>
+            <v-btn flat color="green" :href="article.url" target="_blank">more</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-flex>
+    </v-layout>
   </div>
 </template>
 
 <script>
-
+  import axios from 'axios'
+  export default {
+    data () {
+      return {
+        news: [],
+        priory: 'sources=bbc-sport'
+      }
+    },
+    computed: {
+      getNews () {
+        axios.get('https://newsapi.org/v2/top-headlines?' + this.priory + '&apiKey=6106016e84014c3c9f86d4fe5bf6bef3')
+          .then((response) => {
+            this.news = response.data.articles
+            console.log(this.news)
+            this.$store.commit('SET_SITE_TITLE', 'Home football plan')
+          }
+          )
+      }
+    }
+  }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -22,5 +66,8 @@
     h1 {
       margin-bottom: 20px;
     }
+  }
+  .item-news {
+    padding: 15px;
   }
 </style>

@@ -1,15 +1,32 @@
 <template>
   <v-layout row wrap>
     <v-flex xs12>
-      <div class="table-for-league">
-        <h1></h1>
-                  <table class="list-games">
-                    <tr avatar v-for="fixter in fixtures.fixtures">
-                      <td>{{ fixter.homeTeamName }}</td>
-                      <td><v-chip outline color="secondary">{{ fixter.result.goalsHomeTeam }} : {{ fixter.result.goalsAwayTeam }}</v-chip></td>
-                      <td>{{ fixter.awayTeamName }}</td>
-                    </tr>
-                  </table>
+      <div class="fixtures-container">
+        <h1>Fixtures matches</h1>
+        <table class="list-games">
+          <thead dark color="green darken-3">
+          <tr>
+            <td>Data</td>
+            <td>Tour</td>
+            <td>Home team</td>
+            <td>Score</td>
+            <td>Away team</td>
+            <td>Status</td>
+          </tr>
+          </thead>
+          <tbody>
+            <tr avatar v-for="fixter in fixtures.fixtures">
+              <td class="data-match">{{ Date.parse(fixter.date) }}</td>
+              <td class="tour-number">{{ fixter.matchday }}</td>
+              <td class="home-team">{{ fixter.homeTeamName }}</td>
+              <td class="score-match">{{ fixter.result.goalsHomeTeam }} : {{ fixter.result.goalsAwayTeam }}</td>
+              <td class="away-team">{{ fixter.awayTeamName }}</td>
+              <td v-if="fixter.status === 'IN_PLAY'" class="status-play">{{ fixter.status }}</td>
+              <td v-if="fixter.status === 'FINISHED'" class="status-finish">{{ fixter.status }}</td>
+              <td v-if="fixter.status === 'TIMED'" class="status-timed">{{ fixter.status }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </v-flex>
   </v-layout>
@@ -20,6 +37,9 @@
     props: ['id'],
     data () {
       return {
+        siteTitle: '',
+        matchday: 0,
+        count: 0,
         fixtures: []
       }
     },
@@ -34,12 +54,72 @@
           }
         }).then((response) => {
           this.fixtures = response.data
-          console.log(this.fixtures)
+          this.$store.commit('SET_SITE_TITLE', 'Fixtures matches')
+          console.log(response.data)
         })
       }
     }
   }
 </script>
 <style lang="scss" scoped>
+  .fixtures-container {
+    font-size: 13px;
+    padding: 15px;
+    table {
+      background: #fff;
+      border-spacing: 0;
+      border: 1px solid #eee;
+      width: 100%;
+      thead {
+        font-size: 18px;
+        text-transform: uppercase;
+        background: #2e7d32;
+        color: #fff;
+        td {
+          border: none !important;
+        }
+      }
+      td {
+        padding: 20px 25px;
+        border-bottom: 1px solid #eee;
+        border-right: 1px solid #eee;
+        &:last-child {
+          border: 0;
+          border-bottom: 1px solid #fff;
+          text-align: center;
+        }
+      }
+    }
 
+    .status-play {
+      background-color: #ff9800;
+    }
+    .status-finish {
+      background-color: #4caf50;
+    }
+    .status-timed {
+      background-color: #f44336;
+    }
+    .score-match {
+      text-align: center;
+      font-size: 18px !important;
+    }
+    .home-team, .away-team {
+      background-color: #fafafa;
+      font-size: 15px;
+    }
+    .home-team {
+      text-align: right;
+    }
+    .data-match {
+      color: #888;
+      font-style: italic;
+      font-weight: bold;
+    }
+    .tour-number {
+      text-align: center;
+      font-weight: bold;
+      color: #888;
+    }
+  }
 </style>
