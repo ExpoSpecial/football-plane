@@ -8,7 +8,8 @@ import Vuetify from 'vuetify'
 import Axios from 'axios'
 import VueAxios from 'vue-axios'
 import { store } from './store'
-
+Axios.defaults.baseURL = 'https://api.football-data.org/v1'
+Axios.defaults.headers.common['X-Auth-Token'] = 'b50e3db6d6db42d18ab7a6d230a0b206'
 Vue.use(VueAxios, Axios)
 Vue.use(Vuetify)
 import('../node_modules/vuetify/dist/vuetify.min.css')

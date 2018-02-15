@@ -2,16 +2,8 @@
   <v-layout row wrap>
     <v-flex xs12>
   <div class="table-for-league">
-    <v-btn
-      :to="{ name: 'Home' }"
-      color="blue-grey"
-      class="white--text"
-    >
-      <v-icon dark>arrow_back</v-icon>
-      back home
-    </v-btn>
     <h1>{{ league.leagueCaption }}</h1>
-    <v-tabs fixed icons centered>
+    <v-tabs centered>
       <v-tabs-bar dark color="green darken-3">
         <v-tabs-slider color="yellow"></v-tabs-slider>
         <v-tabs-item href="#table">
@@ -131,11 +123,7 @@
     },
     methods: {
       getLeague () {
-        axios.get('https://api.football-data.org/v1/competitions/' + this.id + '/leagueTable', {
-          headers: {
-            'X-Auth-Token': 'b50e3db6d6db42d18ab7a6d230a0b206'
-          }
-        }).then((response) => {
+        axios.get('/competitions/' + this.id + '/leagueTable').then((response) => {
           this.league = response.data
           this.$store.commit('SET_SITE_TITLE', response.data.leagueCaption)
           for (let i = 1; i <= response.data.matchday; i++) {
@@ -145,18 +133,13 @@
         })
       },
       getFixtures () {
-        axios.get('https://api.football-data.org/v1/competitions/' + this.$route.params.id + '/fixtures', {
-          headers: {
-            'X-Auth-Token': 'b50e3db6d6db42d18ab7a6d230a0b206'
-          }
-        }).then((response) => {
+        axios.get('/competitions/' + this.id + '/fixtures').then((response) => {
           this.fixtures = []
           response.data.fixtures.map((e) => {
             if (e.matchday === this.num) {
               this.fixtures.push(e)
             }
           })
-          console.log(response.data)
         })
       }
     },

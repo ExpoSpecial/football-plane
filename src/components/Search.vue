@@ -32,11 +32,7 @@
     computed: {
       getTeams () {
         let title = this.title
-        axios.get('https://api.football-data.org/v1/teams?name=' + title, {
-          headers: {
-            'X-Auth-Token': 'b50e3db6d6db42d18ab7a6d230a0b206'
-          }
-        }).then((response) => {
+        axios.get('/teams?name=' + title).then((response) => {
           this.items = response.data
           console.log(this.items)
         })

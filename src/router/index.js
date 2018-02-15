@@ -6,7 +6,6 @@ import SignUp from '@/components/SignUp'
 import SingleLeague from '@/components/SingleLeague'
 import SingleTeam from '@/components/SingleTeam'
 import LeagueChampions from '@/components/LeagueChampions'
-import FixturesMatches from '@/components/FixturesMatches'
 
 Vue.use(Router)
 
@@ -39,11 +38,6 @@ export default new Router({
       path: '/champions-league',
       name: 'LeagueChampions',
       component: LeagueChampions
-    },
-    {
-      path: '/fixtures-matches',
-      name: 'FixturesMatches',
-      component: FixturesMatches
     },
     {
       path: '/',

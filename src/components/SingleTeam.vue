@@ -46,11 +46,7 @@
     },
     methods: {
       getTeam () {
-        axios.get('https://api.football-data.org/v1/teams/' + this.id, {
-          headers: {
-            'X-Auth-Token': 'b50e3db6d6db42d18ab7a6d230a0b206'
-          }
-        }).then((response) => {
+        axios.get('/teams/' + this.id).then((response) => {
           this.item = response.data
           this.$store.commit('SET_SITE_TITLE', response.data.name)
         }, (error) => {
@@ -58,11 +54,7 @@
         })
       },
       getPlayers () {
-        axios.get('https://api.football-data.org/v1/teams/' + this.id + '/players', {
-          headers: {
-            'X-Auth-Token': 'b50e3db6d6db42d18ab7a6d230a0b206'
-          }
-        }).then((response) => {
+        axios.get('/teams/' + this.id + '/players').then((response) => {
           this.players = response.data
           console.log(this.players)
         }, (error) => {

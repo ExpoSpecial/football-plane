@@ -40,11 +40,7 @@
     },
     methods: {
       getPlayers (teamId) {
-        axios.get('https://api.football-data.org/v1/competitions/464/leagueTable', {
-          headers: {
-            'X-Auth-Token': 'b50e3db6d6db42d18ab7a6d230a0b206'
-          }
-        }).then((response) => {
+        axios.get('/464/leagueTable').then((response) => {
           this.teams.push(response.data)
           console.log(response.data)
         })

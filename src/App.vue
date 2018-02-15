@@ -24,7 +24,6 @@
 
       <div class="d-flex align-center" style="margin-left: auto">
         <v-btn :to="{ name: 'LeagueChampions' }">Champions League</v-btn>
-        <v-btn :to="{ name: 'FixturesMatches' }">Fixtures matches</v-btn>
         <v-btn icon large @click="logout()">
           <v-icon>exit_to_app</v-icon>
         </v-btn>
@@ -66,7 +65,7 @@
   }
 </script>
 
-<style>
+<style lang="scss" scoped>
   body {
     font-size: 18px;
   }
